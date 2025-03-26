@@ -21,94 +21,83 @@ def get_session_with_retries():
 @shared_task
 def scrape_categories():
     session = get_session_with_retries()
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'}
     try:
         response = session.get(URL, headers=headers, timeout=30)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        categories = soup.find_all('div', {'class': 'row-fluid mtree_category'})
-
+        categories = soup.find_all('div', class_='row-fluid mtree_category')
         for category in categories:
-            a_elements = category.find_all('a')
-            for a in a_elements:
+            for a in category.find_all('a'):
                 Category.objects.update_or_create(
                     name=a.get_text(strip=True),
                     defaults={'href': DOMAIN + a['href']}
                 )
-        logging.info("Categories scraped successfully.")
+        logging.info("Step 1: Categories scraped successfully.")
     except Exception as e:
-        logging.error(f"Error scraping categories: {e}")
+        logging.error(f"Error in Step 1 (Categories): {e}")
 
 @shared_task
 def scrape_subcategories(category_id):
     category = Category.objects.get(id=category_id)
     session = get_session_with_retries()
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'}
     try:
         response = session.get(category.href, headers=headers, timeout=30)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        subcategories_div = soup.find('div', {'class': 'row-fluid mtree_sub_category'})
-
-        if subcategories_div:
-            ul_element = subcategories_div.find('ul', {'class': 'pad10'})
-            if ul_element:
-                for li in ul_element.find_all('li'):
-                    a = li.find('a')
-                    Subcategory.objects.update_or_create(
-                        category=category,
-                        name=a.get_text(strip=True),
-                        defaults={'href': DOMAIN + a['href']}
-                    )
-        logging.info(f"Subcategories for {category.name} scraped successfully.")
+        subcategories_div = soup.find('div', class_='row-fluid mtree_sub_category')
+        if subcategories_div and (ul := subcategories_div.find('ul', class_='pad10')):
+            for li in ul.find_all('li'):
+                a = li.find('a')
+                Subcategory.objects.update_or_create(
+                    category=category,
+                    name=a.get_text(strip=True),
+                    defaults={'href': DOMAIN + a['href']}
+                )
+        logging.info(f"Step 2: Subcategories for {category.name} scraped successfully.")
     except Exception as e:
-        logging.error(f"Error scraping subcategories for {category.name}: {e}")
+        logging.error(f"Error in Step 2 (Subcategories) for {category.name}: {e}")
 
 @shared_task
 def scrape_businesses(subcategory_id):
     subcategory = Subcategory.objects.get(id=subcategory_id)
     session = get_session_with_retries()
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'}
     business_url = subcategory.href
-
     while business_url:
         try:
             response = session.get(business_url, headers=headers, timeout=30)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
-            businesses_div = soup.find('div', {'id': 'listings'})
-
+            businesses_div = soup.find('div', id='listings')
             if businesses_div:
-                for listing in businesses_div.find_all('div', {'class': 'span12 heading'}):
+                for listing in businesses_div.find_all('div', class_='span12 heading'):
                     h4 = listing.find('h4')
-                    if h4:
-                        a = h4.find('a')
+                    if h4 and (a := h4.find('a')):
                         details = scrape_business_details(DOMAIN + a['href'])
                         Business.objects.update_or_create(
                             subcategory=subcategory,
                             name=a.get_text(strip=True),
-                            defaults={
-                                'href': DOMAIN + a['href'],
-                                'details': details
-                            }
+                            defaults={'href': DOMAIN + a['href'], 'details': details}
                         )
-                next_page = soup.find('a', {'title': 'Next'})
+                next_page = soup.find('a', title='Next')
                 business_url = DOMAIN + next_page['href'] if next_page else None
                 time.sleep(2)
             else:
                 business_url = None
         except Exception as e:
-            logging.error(f"Error scraping businesses for {subcategory.name}: {e}")
+            logging.error(f"Error in Step 3 (Businesses) for {subcategory.name}: {e}")
             break
 
 def scrape_business_details(business_url):
     session = get_session_with_retries()
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'}
     try:
         response = session.get(business_url, headers=headers, timeout=30)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
-        details_table = soup.find('table', {'class': 'table-condensed'})
+        details_table = soup.find('table', class_='table-condensed')
         details = {}
         if details_table:
             for row in details_table.find_all('tr'):

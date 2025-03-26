@@ -3,10 +3,9 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key-here'  # Replace with a secure key
+SECRET_KEY = 'replace-with-secure-key'  # Use django.core.management.utils.get_random_secret_key()
 
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -59,14 +58,21 @@ DATABASES = {
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "scraper/static"]
+STATICFILES_DIRS = [BASE_DIR / 'scraper/static']  # Where your static files are stored
+STATIC_ROOT = BASE_DIR / 'static'  # Where collectstatic will copy them
+
+# Media files (for Excel exports)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Celery settings (unchanged)
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+# Pagination setting (unchanged)
+ITEMS_PER_PAGE = 10

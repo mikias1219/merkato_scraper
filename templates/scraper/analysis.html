@@ -1,22 +1,42 @@
 {% extends 'scraper/base.html' %}
-{% load chartjs %}
+
 {% block content %}
-<h1>Business Data Analysis</h1>
+<h1 style="font-size: 2em; color: #2c3e50; text-align: center; margin-bottom: 30px;">Data Analysis</h1>
 
-<div class="section">
-    <h2>Summary</h2>
-    <p>Total Categories: {{ category_count }}</p>
-    <p>Total Subcategories: {{ subcategory_count }}</p>
-    <p>Total Businesses: {{ business_count }}</p>
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Summary Statistics</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Metric</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background-color: #fff;">
+                <td style="padding: 12px; border: 1px solid #ddd;">Total Categories</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">{{ total_categories }}</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="padding: 12px; border: 1px solid #ddd;">Total Subcategories</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">{{ total_subcategories }}</td>
+            </tr>
+            <tr style="background-color: #fff;">
+                <td style="padding: 12px; border: 1px solid #ddd;">Total Businesses</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">{{ total_businesses }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
-<div class="section">
-    <h2>Businesses per Subcategory</h2>
-    {% bar_chart "subcategory_chart" %}
-</div>
-
-<div class="section">
-    <h2>Primary Category Distribution</h2>
-    {% pie_chart "primary_category_chart" %}
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Export All Data</h2>
+    <p style="font-size: 1em; margin-bottom: 10px;">Download all data combined:</p>
+    <a href="{% url 'export_categories_csv' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Categories CSV</a>
+    <a href="{% url 'export_subcategories_csv' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Subcategories CSV</a>
+    <a href="{% url 'export_businesses_csv' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Businesses CSV</a>
+    <a href="{% url 'export_categories_excel' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Categories Excel</a>
+    <a href="{% url 'export_subcategories_excel' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Subcategories Excel</a>
+    <a href="{% url 'export_businesses_excel' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Businesses Excel</a>
 </div>
 {% endblock %}

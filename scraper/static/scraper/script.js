@@ -1,0 +1,1 @@
+console.log("2Merkato Business Scraper loaded.");

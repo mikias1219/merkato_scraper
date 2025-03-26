@@ -1,0 +1,59 @@
+{% extends 'scraper/base.html' %}
+
+{% block content %}
+<h1 style="font-size: 2em; color: #2c3e50; text-align: center; margin-bottom: 30px;">Subcategories Dashboard</h1>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Subcategory List</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Name</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Category</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">URL</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subcategory in subcategories %}
+                <tr style="background-color: {% cycle '#fff' '#f9f9f9' %};">
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ subcategory.name }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ subcategory.category.name }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ subcategory.href|default:"N/A" }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <a href="{% url 'scrape_businesses' subcategory.id %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em;">Scrape Businesses</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4" style="padding: 12px; border: 1px solid #ddd; text-align: center;">No subcategories available. Scrape a category first.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+        {% if subcategories.has_previous %}
+            <a href="?page={{ subcategories.previous_page_number }}" style="padding: 8px 16px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Previous</a>
+        {% endif %}
+        <span style="font-size: 1em; color: #666; margin: 0 10px;">Page {{ subcategories.number }} of {{ subcategories.paginator.num_pages }}</span>
+        {% if subcategories.has_next %}
+            <a href="?page={{ subcategories.next_page_number }}" style="padding: 8px 16px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Next</a>
+        {% endif %}
+    </div>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Summary</h2>
+    <p style="font-size: 1em;">Total Subcategories: {{ total_subcategories }}</p>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Export Options</h2>
+    <a href="{% url 'export_subcategories_csv' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Download CSV</a>
+    <a href="{% url 'export_subcategories_excel' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Download Excel</a>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Report</h2>
+    <p style="font-size: 1em;">Number of Subcategories Scraped: {{ total_subcategories }}</p>
+    <p style="font-size: 1em;">Next Step: Select a subcategory to scrape its businesses.</p>
+</div>
+{% endblock %}

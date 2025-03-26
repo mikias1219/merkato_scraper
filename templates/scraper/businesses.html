@@ -1,0 +1,62 @@
+{% extends 'scraper/base.html' %}
+
+{% block content %}
+<h1 style="font-size: 2em; color: #2c3e50; text-align: center; margin-bottom: 30px;">Businesses Dashboard</h1>
+
+<div style="text-align: center; margin-bottom: 20px;">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Controls</h2>
+    <a href="{% url 'load_sample_data' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Load Sample Data</a>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Business List</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Name</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Subcategory</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Category</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; background-color: #3498db; color: white; font-weight: bold;">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for business in businesses %}
+                <tr style="background-color: {% cycle '#fff' '#f9f9f9' %};">
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ business.name }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ business.subcategory.name }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ business.subcategory.category.name }}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">{{ business.details|json_script:"details"|safe }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4" style="padding: 12px; border: 1px solid #ddd; text-align: center;">No businesses available. Scrape a subcategory first.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+        {% if businesses.has_previous %}
+            <a href="?page={{ businesses.previous_page_number }}" style="padding: 8px 16px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Previous</a>
+        {% endif %}
+        <span style="font-size: 1em; color: #666; margin: 0 10px;">Page {{ businesses.number }} of {{ businesses.paginator.num_pages }}</span>
+        {% if businesses.has_next %}
+            <a href="?page={{ businesses.next_page_number }}" style="padding: 8px 16px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Next</a>
+        {% endif %}
+    </div>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Summary</h2>
+    <p style="font-size: 1em;">Total Businesses: {{ total_businesses }}</p>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Export Options</h2>
+    <a href="{% url 'export_businesses_csv' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Download CSV</a>
+    <a href="{% url 'export_businesses_excel' %}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 1em; margin: 5px;">Download Excel</a>
+</div>
+
+<div style="background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5em; color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Report</h2>
+    <p style="font-size: 1em;">Number of Businesses Scraped: {{ total_businesses }}</p>
+    <p style="font-size: 1em;">Next Step: Export data or review in Analysis.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2Merkato Business Scraper</title>
+    <link rel="stylesheet" href="{% static 'scraper/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}">Home</a> | <a href="{% url 'analysis' %}">Analysis</a>
+    </nav>
+    {% block content %}{% endblock %}
+    <script src="{% static 'scraper/script.js' %}"></script>
+</body>
+</html>

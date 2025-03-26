@@ -1,0 +1,51 @@
+{% extends 'scraper/base.html' %}
+{% load static %}
+{% block content %}
+<h1>2Merkato Business Scraper</h1>
+
+<div class="section">
+    <h2>Controls</h2>
+    <a href="{% url 'scrape_categories' %}" class="button">Scrape Categories</a>
+    <a href="{% url 'load_sample_data' %}" class="button">Load Sample Data</a>
+    <a href="{% url 'export_csv' %}" class="button">Export CSV</a>
+    <a href="{% url 'export_excel' %}" class="button">Export Excel</a>
+</div>
+
+<div class="section">
+    <h2>Categories ({{ category_count }})</h2>
+    <ul>
+        {% for category in categories %}
+            <li>{{ category.name }} - <a href="{% url 'scrape_subcategories' category.id %}" class="button">Scrape Subcategories</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Subcategories ({{ subcategory_count }})</h2>
+    <ul>
+        {% for subcategory in subcategories %}
+            <li>{{ subcategory.name }} ({{ subcategory.category.name }}) - <a href="{% url 'scrape_businesses' subcategory.id %}" class="button">Scrape Businesses</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Businesses ({{ business_count }})</h2>
+    <table>
+        <tr>
+            <th>Business Name</th>
+            <th>Subcategory</th>
+            <th>Category</th>
+            <th>Details</th>
+        </tr>
+        {% for business in businesses %}
+            <tr>
+                <td>{{ business.name }}</td>
+                <td>{{ business.subcategory.name }}</td>
+                <td>{{ business.subcategory.category.name }}</td>
+                <td>{{ business.details|json_script:"details"|safe }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

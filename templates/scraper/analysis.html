@@ -1,0 +1,22 @@
+{% extends 'scraper/base.html' %}
+{% load chartjs %}
+{% block content %}
+<h1>Business Data Analysis</h1>
+
+<div class="section">
+    <h2>Summary</h2>
+    <p>Total Categories: {{ category_count }}</p>
+    <p>Total Subcategories: {{ subcategory_count }}</p>
+    <p>Total Businesses: {{ business_count }}</p>
+</div>
+
+<div class="section">
+    <h2>Businesses per Subcategory</h2>
+    {% bar_chart "subcategory_chart" %}
+</div>
+
+<div class="section">
+    <h2>Primary Category Distribution</h2>
+    {% pie_chart "primary_category_chart" %}
+</div>
+{% endblock %}
